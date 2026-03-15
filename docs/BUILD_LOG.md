@@ -5,3 +5,6 @@ Day 1
 - Added campus map screen
 - Added campus map
 - Added pickup point markers
+Day 2
+- Added student GPS location
+- Map now shows user's live location

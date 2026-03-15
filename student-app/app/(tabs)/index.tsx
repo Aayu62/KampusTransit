@@ -1,5 +1,7 @@
 import MapView, { Marker } from "react-native-maps";
 import { StyleSheet, View } from "react-native";
+import * as Location from "expo-location";
+import { useEffect, useState } from "react";
 
 const pickupPoints = [
   {
@@ -59,10 +61,29 @@ const pickupPoints = [
 ];
 
 export default function HomeScreen() {
+  const [location, setLocation] = useState<any>(null);
+
+  useEffect(() => {
+    getLocation();
+  }, []);
+
+  async function getLocation() {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+
+    if (status !== "granted") {
+      console.log("Permission denied");
+      return;
+    }
+
+    let userLocation = await Location.getCurrentPositionAsync({});
+    setLocation(userLocation.coords);
+  }
+
   return (
     <View style={styles.container}>
       <MapView
         style={styles.map}
+        showsUserLocation={true}
         initialRegion={{
           latitude: 20.3548,
           longitude: 85.8199,
