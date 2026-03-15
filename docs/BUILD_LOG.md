@@ -14,3 +14,6 @@ Day 2
 - Prevents requests from far locations
 - Added 3 minute cooldown for Raise Hand
 - Prevents request spam
+- Connected student app to Supabase
+- Pickup points now loaded from database
+- Raise Hand requests stored in database

@@ -4,82 +4,34 @@ import * as Location from "expo-location";
 import { useEffect, useState } from "react";
 import { getDistance } from "geolib";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-const pickupPoints = [
-  {
-    id: 1,
-    name: "Campus 25 (BLOCK A)",
-    latitude: 20.364304,
-    longitude:   85.816157,
-  },
-  {
-    id: 2,
-    name: "Campus 25 (KIIT KAFE)",
-    latitude: 20.363693,
-    longitude:  85.817290,
-  },
-  {
-    id: 3,
-    name: "Campus 14",
-    latitude: 20.356463,
-    longitude:  85.815693,
-  },
-  {
-    id: 4,
-    name: "Campus 13",
-    latitude: 20.356376,
-    longitude: 85.818497,
-  },
-  {
-    id: 5,
-    name: "Campus 12",
-    latitude: 20.354561,
-    longitude: 85.819339,
-  },
-  {
-    id: 6,
-    name: "Campus 6",
-    latitude: 20.352551,
-    longitude: 85.819276,
-  },
-  {
-    id: 7,
-    name: "Campus 17",
-    latitude: 20.349300,
-    longitude: 85.819440,
-  },
-  {
-    id: 8,
-    name: "Transport",
-    latitude: 20.354712,
-    longitude: 85.818027,
-  },
-  {
-    id: 9,
-    name: "Campus 14 (South Gate)",
-    latitude: 20.355495,
-    longitude: 85.815649,
-  },
-  {
-    id: 10,
-    name: "Dilas Niwas",
-    latitude: 20.363404,
-    longitude:  85.823432,
-  },
-];
+import { supabase } from "../../lib/supabase";
 
 export default function HomeScreen() {
   const [location, setLocation] = useState<any>(null);
+  const [pickupPoints, setPickupPoints] = useState<any[]>([]);
 
   useEffect(() => {
     getLocation();
+    fetchPickupPoints();
   }, []);
+
+  async function fetchPickupPoints() {
+    const { data, error } = await supabase
+      .from("pickup_points")
+      .select("*");
+  
+    if (error) {
+      console.log(error);
+    } else {
+      setPickupPoints(data);
+    }
+  }
 
   async function getLocation() {
     let { status } = await Location.requestForegroundPermissionsAsync();
 
     if (status !== "granted") {
-      console.log("Permission denied");
+      Alert.alert("Permission denied");
       return;
     }
 
@@ -131,7 +83,17 @@ export default function HomeScreen() {
   
     await AsyncStorage.setItem("lastRaiseTime", now.toString());
   
-    Alert.alert("Transport Request", `Request sent at ${point.name}`);
+    const { error } = await supabase
+      .from("raise_requests")
+      .insert({
+        pickup_point_id: point.id,
+      });
+    
+    if (error) {
+      Alert.alert("Error", "Failed to send request");
+    } else {
+      Alert.alert("Success", `Request sent at ${point.name}`);
+    }
   }
 
   return (
