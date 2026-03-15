@@ -8,3 +8,5 @@ Day 1
 Day 2
 - Added student GPS location
 - Map now shows user's live location
+- Added interaction with pickup points
+- Implemented basic Raise Hand request

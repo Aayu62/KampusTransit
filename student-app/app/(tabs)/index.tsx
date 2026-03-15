@@ -1,5 +1,5 @@
 import MapView, { Marker } from "react-native-maps";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Alert } from "react-native";
 import * as Location from "expo-location";
 import { useEffect, useState } from "react";
 
@@ -79,6 +79,14 @@ export default function HomeScreen() {
     setLocation(userLocation.coords);
   }
 
+  function raisehand(pointName: string) {
+    Alert.alert(
+      "Transport Request",
+      `You requested transport at ${pointName}`,
+      [{ text: "OK"}]
+    );
+  }
+
   return (
     <View style={styles.container}>
       <MapView
@@ -99,7 +107,8 @@ export default function HomeScreen() {
               longitude: point.longitude,
             }}
             title={point.name}
-            description="Pickup Point"
+            description="Tap to request transport"
+            onCalloutPress={() => raisehand(point.name)}
           />
         ))}
       </MapView>
