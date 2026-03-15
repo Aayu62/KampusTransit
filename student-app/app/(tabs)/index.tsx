@@ -2,6 +2,7 @@ import MapView, { Marker } from "react-native-maps";
 import { StyleSheet, View, Alert } from "react-native";
 import * as Location from "expo-location";
 import { useEffect, useState } from "react";
+import { getDistance } from "geolib";
 
 const pickupPoints = [
   {
@@ -58,6 +59,12 @@ const pickupPoints = [
     latitude: 20.355495,
     longitude: 85.815649,
   },
+  {
+    id: 10,
+    name: "Dilas Niwas",
+    latitude: 20.363404,
+    longitude:  85.823432,
+  },
 ];
 
 export default function HomeScreen() {
@@ -79,12 +86,34 @@ export default function HomeScreen() {
     setLocation(userLocation.coords);
   }
 
-  function raisehand(pointName: string) {
-    Alert.alert(
-      "Transport Request",
-      `You requested transport at ${pointName}`,
-      [{ text: "OK"}]
+  function raiseHand(point: any) {
+    if (!location) {
+      Alert.alert("Location not available");
+      return;
+    }
+
+    const distance = getDistance(
+      {
+        latitude: location.latitude,
+        longitude: location.longitude,
+      },
+      {
+        latitude: point.latitude,
+        longitude: point.longitude,
+      }
     );
+
+    if (distance <= 100) {
+      Alert.alert(
+        "Transport Request",
+        `Request sent at ${point.name}`
+      );
+    } else {
+      Alert.alert(
+        "Too Far",
+        "You must be within 50 meters of the pickup point to request transport."
+      );
+    }
   }
 
   return (
@@ -108,7 +137,7 @@ export default function HomeScreen() {
             }}
             title={point.name}
             description="Tap to request transport"
-            onCalloutPress={() => raisehand(point.name)}
+            onCalloutPress={() => raiseHand(point)}
           />
         ))}
       </MapView>
