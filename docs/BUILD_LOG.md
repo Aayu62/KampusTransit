@@ -10,3 +10,7 @@ Day 2
 - Map now shows user's live location
 - Added interaction with pickup points
 - Implemented basic Raise Hand request
+- Added 50m proximity validation for raise hand
+- Prevents requests from far locations
+- Added 3 minute cooldown for Raise Hand
+- Prevents request spam

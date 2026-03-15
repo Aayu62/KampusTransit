@@ -3,6 +3,7 @@ import { StyleSheet, View, Alert } from "react-native";
 import * as Location from "expo-location";
 import { useEffect, useState } from "react";
 import { getDistance } from "geolib";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const pickupPoints = [
   {
@@ -86,12 +87,12 @@ export default function HomeScreen() {
     setLocation(userLocation.coords);
   }
 
-  function raiseHand(point: any) {
+  async function raiseHand(point: any) {
     if (!location) {
       Alert.alert("Location not available");
       return;
     }
-
+  
     const distance = getDistance(
       {
         latitude: location.latitude,
@@ -102,18 +103,35 @@ export default function HomeScreen() {
         longitude: point.longitude,
       }
     );
-
-    if (distance <= 100) {
-      Alert.alert(
-        "Transport Request",
-        `Request sent at ${point.name}`
-      );
-    } else {
+  
+    if (distance > 50) {
       Alert.alert(
         "Too Far",
-        "You must be within 50 meters of the pickup point to request transport."
+        "You must be within 50 meters of the pickup point."
       );
+      return;
     }
+  
+    const lastRaise = await AsyncStorage.getItem("lastRaiseTime");
+    const now = Date.now();
+  
+    if (lastRaise) {
+      const diff = now - parseInt(lastRaise);
+  
+      if (diff < 180000) {
+        const remaining = Math.ceil((180000 - diff) / 1000);
+  
+        Alert.alert(
+          "Please wait",
+          `You can raise another request in ${remaining} seconds`
+        );
+        return;
+      }
+    }
+  
+    await AsyncStorage.setItem("lastRaiseTime", now.toString());
+  
+    Alert.alert("Transport Request", `Request sent at ${point.name}`);
   }
 
   return (
