@@ -56,7 +56,7 @@ export default function HomeScreen() {
       }
     );
   
-    if (distance > 50) {
+    if (distance > 100) {
       Alert.alert(
         "Too Far",
         "You must be within 50 meters of the pickup point."
@@ -70,7 +70,7 @@ export default function HomeScreen() {
     if (lastRaise) {
       const diff = now - parseInt(lastRaise);
   
-      if (diff < 180000) {
+      if (diff < 10000) {
         const remaining = Math.ceil((180000 - diff) / 1000);
   
         Alert.alert(

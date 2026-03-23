@@ -17,3 +17,5 @@ Day 2
 - Connected student app to Supabase
 - Pickup points now loaded from database
 - Raise Hand requests stored in database
+- Added realtime update of "raise hand"
+- add clear requests button for admin
